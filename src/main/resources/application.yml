@@ -1,0 +1,40 @@
+server:
+  port: 7777
+
+logging:
+  level:
+    root: INFO
+    org.springframework.web: INFO
+    org.springframework.security: trace
+    org.springframework.security.jackson2: INFO
+
+spring:
+  datasource:
+    client:
+      jdbc-url: jdbc:postgresql://localhost:5432/sso
+      username: sa
+      password: Admin@123!
+      driver-class-name: org.postgresql.Driver
+    user:
+      jdbc-url: jdbc:postgresql://localhost:5432/app
+      username: sa
+      password: Admin@123!
+      driver-class-name: org.postgresql.Driver
+
+    jpa:
+      hibernate:
+        ddl-auto: update
+      show-sql: true
+      properties:
+        hibernate:
+          jdbc:
+            lob:
+              non_contextual_creation: true
+          format_sql: true
+  security:
+    oauth2:
+      resourceserver:
+        opaquetoken:
+          introspection-uri: http://localhost:7777/oauth2/introspect
+          client-id: demo-client-opaque
+          client-secret: secret
