@@ -10,18 +10,21 @@ logging:
 
 spring:
   datasource:
+    #postgres
     client:
       jdbc-url: jdbc:postgresql://localhost:5432/sso
       username: sa
       password: Admin@123!
       driver-class-name: org.postgresql.Driver
+    #sqlserver
     user:
-      jdbc-url: jdbc:postgresql://localhost:5432/app
+      jdbc-url: jdbc:sqlserver://localhost;database=app;encrypt=false
       username: sa
       password: Admin@123!
-      driver-class-name: org.postgresql.Driver
+      driver-class-name: com.microsoft.sqlserver.jdbc.SQLServerDriver
 
-    jpa:
+  jpa:
+    user:
       hibernate:
         ddl-auto: update
       show-sql: true
@@ -31,6 +34,18 @@ spring:
             lob:
               non_contextual_creation: true
           format_sql: true
+          dialect: org.hibernate.dialect.PostgreSQLDialect
+    client:
+      hibernate:
+        ddl-auto: update
+      show-sql: true
+      properties:
+        hibernate:
+          jdbc:
+            lob:
+              non_contextual_creation: true
+          format_sql: true
+          dialect: org.hibernate.dialect.SQLServerDialect
   security:
     oauth2:
       resourceserver:

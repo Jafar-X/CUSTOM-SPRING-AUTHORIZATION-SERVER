@@ -2,6 +2,7 @@ package com.example.spring.authorizationserver.config;
 
 import javax.sql.DataSource;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.boot.autoconfigure.orm.jpa.JpaProperties;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.jdbc.DataSourceBuilder;
 import org.springframework.context.annotation.Bean;
@@ -27,6 +28,13 @@ public class DataSourceConfig {
         return DataSourceBuilder.create().build();
     }
 
+    @Primary
+    @Bean(name = "clientJpaProperties")
+    @ConfigurationProperties(prefix = "spring.jpa.client")
+    public JpaProperties clientJpaProperties() {
+        return new JpaProperties();
+    }
+
     //to see if the property is automatically populated based on application properties using prefix
     //To check if Entity manager works
     //Scanning to the parent
@@ -36,7 +44,8 @@ public class DataSourceConfig {
     @Primary
     @Bean(name = "clientEntityManagerFactory")
     public LocalContainerEntityManagerFactoryBean clientEntityManagerFactory(
-            @Qualifier("clientDataSource") DataSource dataSource) {
+            @Qualifier("clientDataSource") DataSource dataSource,
+            @Qualifier("clientJpaProperties") JpaProperties jpaProperties) {
 
         LocalContainerEntityManagerFactoryBean em = new LocalContainerEntityManagerFactoryBean();
         em.setDataSource(dataSource);
@@ -44,11 +53,7 @@ public class DataSourceConfig {
         //to check if works with different JpaProvider without touching the code
         HibernateJpaVendorAdapter vendorAdapter = new HibernateJpaVendorAdapter();
         em.setJpaVendorAdapter(vendorAdapter);
-
-        Map<String, Object> properties = new HashMap<>();
-        properties.put("hibernate.hbm2ddl.auto", "update");
-        properties.put("hibernate.dialect", "org.hibernate.dialect.PostgreSQLDialect");
-        em.setJpaPropertyMap(properties);
+        em.setJpaPropertyMap(jpaProperties.getProperties());
 
         return em;
     }
@@ -67,9 +72,16 @@ public class DataSourceConfig {
         return DataSourceBuilder.create().build();
     }
 
+    @Bean(name = "userJpaProperties")
+    @ConfigurationProperties(prefix = "spring.jpa.user")
+    public JpaProperties userJpaProperties() {
+        return new JpaProperties();
+    }
+
     @Bean(name = "userEntityManagerFactory")
     public LocalContainerEntityManagerFactoryBean userEntityManagerFactory(
-            @Qualifier("userDataSource") DataSource dataSource) {
+            @Qualifier("userDataSource") DataSource dataSource,
+            @Qualifier("userJpaProperties") JpaProperties jpaProperties) {
 
         LocalContainerEntityManagerFactoryBean em = new LocalContainerEntityManagerFactoryBean();
         em.setDataSource(dataSource);
@@ -78,10 +90,7 @@ public class DataSourceConfig {
         HibernateJpaVendorAdapter vendorAdapter = new HibernateJpaVendorAdapter();
         em.setJpaVendorAdapter(vendorAdapter);
 
-        Map<String, Object> properties = new HashMap<>();
-        properties.put("hibernate.hbm2ddl.auto", "update");
-        properties.put("hibernate.dialect", "org.hibernate.dialect.PostgreSQLDialect");
-        em.setJpaPropertyMap(properties);
+        em.setJpaPropertyMap(jpaProperties.getProperties());
 
         return em;
     }
